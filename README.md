@@ -56,4 +56,4 @@ for (ProductDisplayInfo pdi : pdiList) {
 }
 ```
 
-Elaboration of JINQ is in progress. Until then you can try the related blog [post](http://vivekragunathan.wordpress.com).
+Elaboration of JINQ is in progress. Until then you can try the related blog [post](https://vivekragunathan.wordpress.com/2016/04/02/jinq/).
