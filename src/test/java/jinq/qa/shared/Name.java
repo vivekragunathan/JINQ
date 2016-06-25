@@ -1,7 +1,7 @@
 package jinq.qa.shared;
 
 import data.TextHelpers;
-import misc.Helpers;
+import misc.DateTimeHelpers;
 
 public class Name implements Comparable<Name> {
 	public final String firstName;
@@ -45,11 +45,11 @@ public class Name implements Comparable<Name> {
 
 		final String firstName = parts.length > 0 && TextHelpers.isNotBlank(parts[0])
 		                         ? parts[0]
-		                         : "F" + Helpers.getLast4OfTicks();
+		                         : "F" + DateTimeHelpers.getLast4OfTicks();
 
 		final String lastName  = parts.length > 1 && TextHelpers.isNotBlank(parts[1])
 		                         ? parts[1]
-		                         : "L" + Helpers.getLast4OfTicks();
+		                         : "L" + DateTimeHelpers.getLast4OfTicks();
 
 		return new Name(firstName, lastName);
 	}

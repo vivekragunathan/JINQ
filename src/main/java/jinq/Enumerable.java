@@ -4,6 +4,7 @@ import delegates.*;
 import jodash.*;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implements IEnumerable<T> {
 
@@ -41,7 +42,7 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	}
 
 	@Override
-	public <R /*extends Comparable<R>*/> Iterable<R> select(Func<T, R> selector) {
+	public <R> Iterable<R> select(Func<T, R> selector) {
 		return clauseProvider.getSelectIterable(source, selector);
 	}
 
@@ -66,6 +67,25 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 		return new Enumerable<>(
 				clauseProvider.getGroupByIterable(source, keySelector, elementSelector)
 		);
+	}
+
+	@Override
+	public T first() {
+		final Iterator<T> iterator = source.iterator();
+		return iterator.hasNext() ? iterator.next() : null;
+	}
+
+	@Override
+	public T last() {
+		final Iterator<T> iterator = source.iterator();
+
+		T last = null;
+
+		while (iterator.hasNext()) {
+			last = iterator.next();
+		}
+
+		return last;
 	}
 
 	@Override

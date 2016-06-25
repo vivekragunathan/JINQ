@@ -12,7 +12,7 @@ public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	Iterable<T> select();
 
-	<R /*extends Comparable<R>*/> Iterable<R> select(Func<T, R> selector);
+	<R> Iterable<R> select(Func<T, R> selector);
 
 	IEnumerable<T> orderBy(Comparator<T> comparator);
 
@@ -21,6 +21,10 @@ public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	<K extends Comparable<K>, E extends Comparable<E>>
 	IEnumerable<GroupByEntry<K, E>> groupBy(Func<T, K> keySelector, Func<T, E> elementSelector);
+
+	T first();
+
+	T last();
 
 	Iterable<T> distinct();
 

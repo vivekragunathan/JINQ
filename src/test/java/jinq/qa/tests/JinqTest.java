@@ -6,10 +6,13 @@ import jinq.qa.shared.Person;
 import jinq.qa.shared.TestClauseProvider;
 import jinq.qa.shared.Utils;
 import jodash.Iterables;
+import misc.DateTimeHelpers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class JinqTest {
@@ -26,7 +29,7 @@ public class JinqTest {
 		final Iterable<Person> persons = new Enumerable<>(this.persons)
 				.where(Person.Predicates.IsAvailable)
 				.where(Person.Predicates.IsOddWeight)
-				.select();
+				.select(/*personNameProvider*/);
 
 		Utils.print(persons, "printAvailableOddWeightPersons");
 	}
@@ -65,58 +68,79 @@ public class JinqTest {
 		{
 			final Iterable<Person> names = new Enumerable<>(persons)
 					.where(Person.Predicates.IsAvailable)
-					.select();
+					.select(/*Person.ElementSelectors.NameFunc*/);
 
 			Utils.print(names, "testWithCustomClauseProvider: Default Clause Provider");
 		}
 
 		{
-			final Iterable<Name> names2 = new Enumerable<>(persons, new TestClauseProvider<Person>())
+			final Iterable<Person> names2 = new Enumerable<>(persons, new TestClauseProvider<Person>())
 					.where(Person.Predicates.IsAvailable)
-					.select(Person.ElementSelectors.NameFunc);
+					.select(/*Person.ElementSelectors.NameFunc*/);
 
 			Utils.print(names2, "testWithCustomClauseProvider: Custom Clause Provider");
 		}
 	}
 
-	private class MyFileClass {
-		final String name;
-		final String absolutePath;
-		final long length;
+	@Test
+	public void testFirstLast() throws Exception {
 
-		MyFileClass(File f) {
-			this.name = f.getName();
-			this.absolutePath = f.getAbsolutePath();
-			this.length = f.length();
+		final Iterable<Name> names = new Enumerable<>(persons)
+				.where(Person.Predicates.IsAvailable)
+				.select(p -> p.name);
+
+		System.out.println(Iterables.toString(names));
+
+		{
+			final Person person = new Enumerable<>(persons)
+					.where(Person.Predicates.IsAvailable)
+					.first();
+
+			System.out.println("First Available: " + person);
 		}
 
-		@Override
-		public String toString() {
-			return String.format("%s (%d) => %s", name, length, absolutePath);
+		{
+			final Person person = new Enumerable<>(persons)
+					.where(Person.Predicates.IsAvailable)
+					.last();
+
+			System.out.println("Last Available: " + person);
 		}
 	}
 
-	/*@Test
-	public void testWithLambdas() throws Exception {
-		final Iterable<Name> selected = new Enumerable<>(persons)
-				.orderBy((me, him) -> me.name.compareTo(him.name))
-				.where(p -> p.isAvailable)
-				.select(p -> p.name);
+	@Test
+	public void testOrderBy() throws Exception {
 
-		System.out.println(Iterables.toString(selected, "\n"));
+		final String dir   = "/usr/local/bin/";
+		final int    days  = 5;
+		final File[] files = new File(dir).listFiles();
 
-		final Iterable<String> query = new Enumerable<>(new File(".").listFiles())
-				.where(f -> f.getName().endsWith(".xml"))
+		System.out.printf("Print files from %s that were modified in the last %d days%n", dir, days);
+
+		final Iterable<String> query = new Enumerable<>(files)
+				.where(f -> DateTimeHelpers.getDaysDifference(f.lastModified()) <= 5)
 				.orderBy((left, right) -> Long.compare(left.length(), right.length()))
 				.select(File::getName);
 
 		System.out.println(Iterables.toString(query, "\n"));
+	}
 
-		final Iterable<MyFileClass> query2 = new Enumerable<>(new File(".").listFiles())
-				.where(File::isHidden)
-				.orderBy((left, right) -> Long.compare(left.length(), right.length()))
-				.select(MyFileClass::new);
+	private static void printFiles(File[] files) {
+		final DateFormat dateFormat = DateFormat.getDateInstance();
+		final Date       today      = new Date();
 
-		System.out.println(Iterables.toString(query2, "\n"));
-	}*/
+		for (File file : files) {
+
+			final Date start    = new Date(file.lastModified());
+			final long daysDiff = DateTimeHelpers.getDaysDifference(start, today);
+
+			System.out.printf(
+					"%s [%s - %s]: %d days%n",
+					file.getName(),
+					dateFormat.format(start),
+					dateFormat.format(today),
+					daysDiff
+			);
+		}
+	}
 }
