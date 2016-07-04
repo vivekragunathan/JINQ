@@ -7,11 +7,6 @@ public class TestClauseProvider<T extends Comparable<T>> extends DefaultClausePr
 
 	@Override
 	public Iterable<T> getWhereIterable(Iterable<T> source, final Predicate<T> predicate) {
-		return super.getWhereIterable(source, new Predicate<T>() {
-			@Override
-			public boolean evaluate(T value) {
-				return !predicate.evaluate(value);
-			}
-		});
+		return super.getWhereIterable(source, value -> !predicate.evaluate(value));
 	}
 }

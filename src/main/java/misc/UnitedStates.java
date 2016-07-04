@@ -1,12 +1,9 @@
-package jinq.qa.shared;
+package misc;
 
-import java.util.HashMap;
-import java.util.Map;
+public enum UnitedStates {
 
-public enum State {
-
-	UNKNOWN("Unknown", ""),
-	ALABAMA("Alabama", "AL"), ALASKA("Alaska", "AK"),
+	ALABAMA("Alabama", "AL"),
+	ALASKA("Alaska", "AK"),
 	AMERICAN_SAMOA("American Samoa", "AS"),
 	ARIZONA("Arizona", "AZ"),
 	ARKANSAS("Arkansas", "AR"),
@@ -65,41 +62,38 @@ public enum State {
 	WISCONSIN("Wisconsin", "WI"),
 	WYOMING("Wyoming", "WY");
 
-	private static final Map<String, State> STATES_BY_ABBR = new HashMap<>();
+	private final String name;
+	private final String code;
 
-	private String name;
-	private String abbreviation;
-
-	static {
-		for (State state : values()) {
-			STATES_BY_ABBR.put(state.getAbbreviation(), state);
-		}
-	}
-
-	State(String name, String abbreviation) {
+	UnitedStates(String name, String code) {
 		this.name = name;
-		this.abbreviation = abbreviation;
-	}
-
-	public String getAbbreviation() {
-		return abbreviation;
-	}
-
-	public static State valueOfAbbreviation(final String abbr) {
-		return STATES_BY_ABBR.get(abbr) != null ? STATES_BY_ABBR.get(abbr) : UNKNOWN;
-	}
-
-	public static State valueOfName(final String name) {
-		final String enumName = name.toUpperCase().replaceAll(" ", "_");
-		try {
-			return valueOf(enumName);
-		} catch (final IllegalArgumentException e) {
-			return State.UNKNOWN;
-		}
+		this.code = code;
 	}
 
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public static UnitedStates fromStateCode(final String code) {
+		for (UnitedStates state : UnitedStates.values()) {
+			if (state.code.equalsIgnoreCase(code)) {
+				return state;
+			}
+		}
+
+		throw new IllegalArgumentException("Unrecognized state code: " + code);
+	}
+
+	public static UnitedStates fromStateName(final String name) {
+		if (name != null && name.length() > 0) {
+			return valueOf(name.toUpperCase().replaceAll(" ", "_"));
+		}
+
+		throw new IllegalArgumentException("Unrecognized state name: " + name);
 	}
 }

@@ -6,7 +6,7 @@ import jinq.GroupByEntry;
 import jinq.IEnumerable;
 import jinq.qa.shared.Name;
 import jinq.qa.shared.Person;
-import jinq.qa.shared.State;
+import misc.UnitedStates;
 import jinq.qa.shared.Utils;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,14 +79,14 @@ public class GroupByTests {
 	@Test
 	public void testGroupByState() throws Exception {
 
-		final Iterable<GroupByEntry<State, Name>> groupings = new Enumerable<>(persons)
+		final Iterable<GroupByEntry<UnitedStates, Name>> groupings = new Enumerable<>(persons)
 				.groupBy(Person.KeySelectors.StateFunc, Person.ElementSelectors.NameFunc);
 
 		Utils.print(null, "testGroupByState");
 
-		for (GroupByEntry<State, Name> current : groupings) {
+		for (GroupByEntry<UnitedStates, Name> current : groupings) {
 
-			final State          key      = current.getKey();
+			final UnitedStates   key      = current.getKey();
 			final Iterable<Name> elements = current.values();
 
 			System.out.printf(
@@ -107,20 +107,10 @@ public class GroupByTests {
 	@Test
 	public void testGroupByThenSelect() throws Exception {
 
-		final Func<GroupByEntry<Integer, Person>, Iterable<Person>> personsByAge = new Func<GroupByEntry<Integer, Person>, Iterable<Person>>() {
-			@Override
-			public Iterable<Person> apply(GroupByEntry<Integer, Person> item) {
-				return item.values();
-			}
-		};
+		// final Func<GroupByEntry<Integer, Person>, Iterable<Person>> personsByAge = GroupByEntry::values;
 
-
-		final Func<GroupByEntry<Integer, Person>, Iterable<Name>> byName = new Func<GroupByEntry<Integer,Person>,Iterable<Name>>() {
-			@Override
-			public Iterable<Name> apply(GroupByEntry<Integer, Person> item) {
-				return new Enumerable<>(item.values()).select(Person.ElementSelectors.NameFunc);
-			}
-		};
+		final Func<GroupByEntry<Integer, Person>, Iterable<Name>> byName = item -> new Enumerable<>(item.values())
+				.select(Person.ElementSelectors.NameFunc);
 
 		final Iterable<Iterable<Name>> persons = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc)
@@ -132,7 +122,7 @@ public class GroupByTests {
 	private static void assignRandomState(List<Person> persons) {
 		final Random rand = new Random(System.currentTimeMillis());
 
-		final State[] states = State.values();
+		final UnitedStates[] states = UnitedStates.values();
 
 		for (Person person : persons) {
 			final int index = rand.nextInt(states.length);

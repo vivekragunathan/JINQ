@@ -9,7 +9,7 @@ public class RelayIterable<T> implements Iterable<T> {
 	protected final Iterable<T> source;
 
 	public RelayIterable(Iterable<T> source) {
-		Throw.WhenNull(source, "Encountered null iterable object");
+		Throw.whenNull(source, "Encountered null iterable object");
 		this.source = source;
 	}
 

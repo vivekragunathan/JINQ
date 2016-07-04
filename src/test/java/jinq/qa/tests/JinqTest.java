@@ -87,7 +87,7 @@ public class JinqTest {
 
 		final Iterable<Name> names = new Enumerable<>(persons)
 				.where(Person.Predicates.IsAvailable)
-				.select(p -> p.name);
+				.select(p -> p.getName());
 
 		System.out.println(Iterables.toString(names));
 

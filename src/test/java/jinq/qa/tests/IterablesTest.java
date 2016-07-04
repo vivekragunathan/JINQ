@@ -12,20 +12,14 @@ public class IterablesTest {
 
 	private static Iterable<Integer> DEFAULT_INPUT_ITERABLE = new IterableArray<>(new Integer[] { 1, 2, 3, 4, 5 });
 
-	private static final Func2<Integer, Integer, Integer> addFunc2 = new Func2<Integer, Integer, Integer>() {
-		@Override
-		public Integer apply(Integer item, Integer aggregate) {
-			System.out.printf("%d + ", item);
-			return aggregate == null ? 0 : item + aggregate;
-		}
+	private static final Func2<Integer, Integer, Integer> addFunc2 = (item, aggregate) -> {
+		System.out.printf("%d + ", item);
+		return aggregate == null ? 0 : item + aggregate;
 	};
 
-	private static final Func2<Integer, Integer, Integer> subtractFunc2 = new Func2<Integer, Integer, Integer>() {
-		@Override
-		public Integer apply(Integer item, Integer aggregate) {
-			System.out.printf("%d - ", item);
-			return aggregate == null ? item : aggregate - item;
-		}
+	private static final Func2<Integer, Integer, Integer> subtractFunc2 = (item, aggregate) -> {
+		System.out.printf("%d - ", item);
+		return aggregate == null ? item : aggregate - item;
 	};
 
 	@Test
