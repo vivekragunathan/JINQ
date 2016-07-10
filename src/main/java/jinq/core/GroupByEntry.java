@@ -1,4 +1,6 @@
-package jinq;
+package jinq.core;
+
+import jinq.RelayIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -30,7 +30,7 @@ public class TailEndTests {
 	@Test
 	public void testDistinct() {
 		final Iterable<Boolean> booleans = new Enumerable<>(persons)
-				.where(Utils.<Person>makeTruthyPredicate())
+				.where(Utils.makeTruthyPredicate())
 				.select(Person.ElementSelectors.AvailableFunc);
 
 		final Iterable<Boolean> distinctBooleans = Iterables.distinct(booleans);

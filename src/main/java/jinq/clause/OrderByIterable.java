@@ -1,5 +1,6 @@
-package jinq;
+package jinq.clause;
 
+import jinq.Enumerable;
 import jodash.Iterables;
 
 import java.util.Collections;

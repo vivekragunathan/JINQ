@@ -1,6 +1,9 @@
-package jinq;
+package jinq.core;
 
 import delegates.*;
+import jinq.GroupByEntry;
+import jinq.clause.SelectIterable;
+
 import java.util.Comparator;
 
 public interface IClauseProvider<T extends Comparable<T>> {
@@ -9,9 +12,9 @@ public interface IClauseProvider<T extends Comparable<T>> {
 
 	Iterable<T> getOrderByIterable(Iterable<T> source, Comparator<T> keySelector);
 
-	Iterable<T> getSelectIterable(Iterable<T> source);
+	SelectIterable<T, T> getSelectIterable(Iterable<T> source);
 
-	<R /*extends Comparable<R>*/> Iterable<R> getSelectIterable(Iterable<T> source, Func<T, R> selector);
+	<R> SelectIterable<T, R> getSelectIterable(Iterable<T> source, Func<T, R> selector);
 
 	<K extends Comparable<K>>
 	IEnumerable<GroupByEntry<K, T>> getGroupByIterable(Iterable<T> source, Func<T, K> keySelector);

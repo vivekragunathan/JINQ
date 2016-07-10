@@ -1,4 +1,4 @@
-package jinq;
+package jinq.core;
 
 import java.util.Iterator;
 

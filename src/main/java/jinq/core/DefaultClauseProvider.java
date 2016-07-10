@@ -1,6 +1,10 @@
-package jinq;
+package jinq.core;
 
 import delegates.*;
+import jinq.clause.OrderByIterable;
+import jinq.clause.PredicateIterable;
+import jinq.clause.SelectIterable;
+
 import java.util.*;
 
 public class DefaultClauseProvider<T extends Comparable<T>> implements IClauseProvider<T> {
@@ -19,12 +23,12 @@ public class DefaultClauseProvider<T extends Comparable<T>> implements IClausePr
 	}
 
 	@Override
-	public Iterable<T> getSelectIterable(Iterable<T> source) {
+	public SelectIterable<T, T> getSelectIterable(Iterable<T> source) {
 		return getSelectIterable(source, null);
 	}
 
 	@Override
-	public <R /*extends Comparable<R>*/> Iterable<R> getSelectIterable(Iterable<T> source, Func<T, R> selector) {
+	public <R> SelectIterable<T, R> getSelectIterable(Iterable<T> source, Func<T, R> selector) {
 		return new SelectIterable<>(source, selector);
 	}
 

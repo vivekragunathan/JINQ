@@ -1,6 +1,8 @@
-package jinq;
+package jinq.core;
 
 import delegates.*;
+import jinq.GroupByEntry;
+import jinq.clause.SelectIterable;
 
 import java.util.Comparator;
 
@@ -10,9 +12,9 @@ public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	IEnumerable<T> where(Predicate<T> predicate);
 
-	Iterable<T> select();
+	SelectIterable<T, T> select();
 
-	<R /*extends Comparable<R>*/> Iterable<R> select(Func<T, R> selector);
+	<R> SelectIterable<T, R> select(Func<T, R> selector);
 
 	IEnumerable<T> orderBy(Comparator<T> comparator);
 
@@ -21,6 +23,12 @@ public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	<K extends Comparable<K>, E extends Comparable<E>>
 	IEnumerable<GroupByEntry<K, E>> groupBy(Func<T, K> keySelector, Func<T, E> elementSelector);
+
+	T first();
+
+	T last();
+
+	int count();
 
 	Iterable<T> distinct();
 

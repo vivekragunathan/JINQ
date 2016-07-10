@@ -1,9 +1,14 @@
-package jinq;
+package jinq.core;
 
 import delegates.*;
+import jinq.DefaultClauseProvider;
+import jinq.GroupByEntry;
+import jinq.RelayIterable;
+import jinq.clause.SelectIterable;
 import jodash.*;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implements IEnumerable<T> {
 
@@ -36,12 +41,12 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	}
 
 	@Override
-	public Iterable<T> select() {
+	public SelectIterable<T, T> select() {
 		return select(null);
 	}
 
 	@Override
-	public <R /*extends Comparable<R>*/> Iterable<R> select(Func<T, R> selector) {
+	public <R> SelectIterable<T, R> select(Func<T, R> selector) {
 		return clauseProvider.getSelectIterable(source, selector);
 	}
 
@@ -66,6 +71,30 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 		return new Enumerable<>(
 				clauseProvider.getGroupByIterable(source, keySelector, elementSelector)
 		);
+	}
+
+	@Override
+	public T first() {
+		final Iterator<T> iterator = source.iterator();
+		return iterator.hasNext() ? iterator.next() : null;
+	}
+
+	@Override
+	public T last() {
+		final Iterator<T> iterator = source.iterator();
+
+		T last = null;
+
+		while (iterator.hasNext()) {
+			last = iterator.next();
+		}
+
+		return last;
+	}
+
+	@Override
+	public int count() {
+		return Iterables.count(source);
 	}
 
 	@Override
