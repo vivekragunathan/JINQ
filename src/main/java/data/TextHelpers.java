@@ -1,6 +1,9 @@
 package data;
 
+import misc.Defaults;
+
 public class TextHelpers {
+
 	private TextHelpers() {
 	}
 
@@ -29,5 +32,21 @@ public class TextHelpers {
 		}
 
 		return true;
+	}
+
+	public static String defaultIfNull(String input) {
+		return defaultIfNull(input, Defaults.EMPTY_STRING);
+	}
+
+	public static String defaultIfNull(String input, String fallback) {
+		return input == null ? fallback : input;
+	}
+
+	public static String defaultIfBlank(String input) {
+		return defaultIfBlank(input, Defaults.EMPTY_STRING);
+	}
+
+	public static String defaultIfBlank(String input, String fallback) {
+		return isBlank(input) ? fallback : input;
 	}
 }

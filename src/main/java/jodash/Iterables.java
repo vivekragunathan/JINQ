@@ -1,14 +1,12 @@
 package jodash;
 
+import data.TextHelpers;
 import delegates.*;
+import misc.Defaults;
 
 import java.util.*;
 
 public class Iterables {
-
-	public static final String CONJUNCTION_PREFIX    = "[";
-	public static final String CONJUNCTION_SUFFIX    = "]";
-	public static final String CONJUNCTION_DELIMITER = ", ";
 
 	private Iterables() {
 	}
@@ -264,9 +262,9 @@ public class Iterables {
 	public static <T> String toString(Iterable<T> items) {
 		return toString(
 				items,
-				CONJUNCTION_DELIMITER,
-				CONJUNCTION_PREFIX,
-				CONJUNCTION_SUFFIX
+				Defaults.CONJUNCTION_DELIMITER,
+				Defaults.CONJUNCTION_PREFIX,
+				Defaults.CONJUNCTION_SUFFIX
 		);
 	}
 
@@ -274,35 +272,54 @@ public class Iterables {
 		return toString(
 				items,
 				delimiter,
-				CONJUNCTION_PREFIX,
-				CONJUNCTION_SUFFIX
+				Defaults.CONJUNCTION_PREFIX,
+				Defaults.CONJUNCTION_SUFFIX
 		);
 	}
 
 	public static <T> String toString(Iterable<T> items, String delimiter, String prefix, String suffix) {
-		prefix = prefix == null ? "" : prefix;
-		suffix = suffix == null ? "" : suffix;
+
+		final String pfx = TextHelpers.defaultIfNull(prefix);
+		final String sfx = TextHelpers.defaultIfBlank(suffix);
 
 		if (items == null) {
-			return prefix + suffix;
+			return pfx + sfx;
 		}
 
-		delimiter = delimiter == null ? "" : delimiter;
+		return String.format(
+				"%s%s%s",
+				pfx,
+				concat(items, delimiter),
+				sfx
+		);
+	}
 
-		final StringBuilder sb              = new StringBuilder(prefix);
-		final int           delimiterLength = delimiter.length();
+	@SafeVarargs
+	public static <T> String concat(T... items) {
+		return concat2(Defaults.CONJUNCTION_DELIMITER, items);
+	}
+
+	@SafeVarargs
+	public static <T> String concat2(String delimiter, T... items) {
+		if (items == null) {
+			return Defaults.EMPTY_STRING;
+		}
+
+		final String        conjunction     = TextHelpers.defaultIfNull(delimiter);
+		final int           delimiterLength = conjunction.length();
+		final StringBuilder sb              = new StringBuilder();
 		int                 lastInsertIndex = -1;
 
 		for (T item : items) {
 			sb.append(item.toString());
-			sb.append(delimiter);
+			sb.append(conjunction);
 			lastInsertIndex = sb.length() - delimiterLength;
 		}
 
 		if (lastInsertIndex >= 0) {
-			sb.replace(lastInsertIndex, sb.length(), "");
+			sb.replace(lastInsertIndex, sb.length(), Defaults.EMPTY_STRING);
 		}
 
-		return sb.append(suffix).toString();
+		return sb.toString();
 	}
 }
