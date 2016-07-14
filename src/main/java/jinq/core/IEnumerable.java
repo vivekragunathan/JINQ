@@ -1,7 +1,6 @@
 package jinq.core;
 
 import delegates.*;
-import jinq.GroupByEntry;
 import jinq.clause.SelectIterable;
 
 import java.util.Comparator;

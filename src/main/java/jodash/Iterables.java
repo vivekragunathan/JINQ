@@ -259,6 +259,47 @@ public class Iterables {
 		return count;
 	}
 
+	public static <K, V> Map<K, V> toMap(Iterable<V> items, Func<V, K> keySelector) {
+		return toMap(items, keySelector, null);
+	}
+
+	/**
+	 * Converts a List to a Map using the specified {@param keySelector}. For every key
+	 * that already exists in the map, an optional action can be performed when
+	 * a {@param keyExistsAction} is provided.
+	 *
+	 * @param keySelector Function that is invoked to determine the key for the item
+	 *                    when inserting into the resultant map
+	 *
+	 * @param keyExistsAction (Optional) Function that is invoked when an item with
+	 *                        the key determined via {@param keySelector} already exists
+	 *                        in the map. Function is invoked with two parameters:
+	 *                        parameter #1: value already in the map for the key
+	 *                        parameter #2: item in the current iteration of {@param items}
+	 */
+	public static <K, V> Map<K, V> toMap(Iterable<V> items,
+	                                     Func<V, K> keySelector,
+	                                     Action3<Map<K, V>, V, V> keyExistsAction) {
+
+		final Map<K, V> map = new HashMap<>();
+
+		for (V item : items) {
+			final K key   = keySelector.apply(item);
+			final V value = map.get(key);
+
+			if (value == null) {
+				map.put(key, item);
+				continue;
+			}
+
+			if (keyExistsAction != null) {
+				keyExistsAction.apply(map, value, item);
+			}
+		}
+
+		return map;
+	}
+
 	public static <T> String toString(Iterable<T> items) {
 		return toString(
 				items,

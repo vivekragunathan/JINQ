@@ -1,7 +1,7 @@
 package jinq.qa.shared;
 
 import delegates.*;
-import jinq.DefaultClauseProvider;
+import jinq.core.DefaultClauseProvider;
 
 public class TestClauseProvider<T extends Comparable<T>> extends DefaultClauseProvider<T> {
 

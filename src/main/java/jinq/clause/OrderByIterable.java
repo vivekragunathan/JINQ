@@ -1,6 +1,6 @@
 package jinq.clause;
 
-import jinq.Enumerable;
+import jinq.core.Enumerable;
 import jodash.Iterables;
 
 import java.util.Collections;
@@ -10,10 +10,10 @@ import java.util.List;
 
 public class OrderByIterable<T extends Comparable<T>> implements Iterable<T>, Iterator<T> {
 
-	private final Iterator<T> iterator;
-	private final Iterable<T> source;
+	private final Iterator<T>   iterator;
+	private final Iterable<T>   source;
 	private final Comparator<T> keySelector;
-	private Iterable<T> orderedSource;
+	private       Iterable<T>   orderedSource;
 
 
 	public OrderByIterable(Iterable<T> source, Comparator<T> keySelector) {

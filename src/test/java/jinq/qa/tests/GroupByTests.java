@@ -1,13 +1,12 @@
 package jinq.qa.tests;
 
-import delegates.Func;
-import jinq.Enumerable;
-import jinq.GroupByEntry;
-import jinq.IEnumerable;
+import jinq.core.Enumerable;
+import jinq.core.GroupByEntry;
+import jinq.core.IEnumerable;
 import jinq.qa.shared.Name;
 import jinq.qa.shared.Person;
-import misc.UnitedStates;
 import jinq.qa.shared.Utils;
+import misc.UnitedStates;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,12 +31,12 @@ public class GroupByTests {
 	@Test
 	public void testSimpleGroupBy() throws Exception {
 
-		final IEnumerable<jinq.GroupByEntry<Integer, Person>> groupings = new Enumerable<>(this.persons)
+		final IEnumerable<GroupByEntry<Integer, Person>> groupings = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc);
 
 		Utils.print(null, "testSimpleGroupBy");
 
-		for (jinq.GroupByEntry<Integer, Person> current : groupings) {
+		for (GroupByEntry<Integer, Person> current : groupings) {
 			System.out.println(current.getKey());
 
 			for (Person person : current.values()) {
@@ -109,12 +108,9 @@ public class GroupByTests {
 
 		// final Func<GroupByEntry<Integer, Person>, Iterable<Person>> personsByAge = GroupByEntry::values;
 
-		final Func<GroupByEntry<Integer, Person>, Iterable<Name>> byName = item -> new Enumerable<>(item.values())
-				.select(Person.ElementSelectors.NameFunc);
-
 		final Iterable<Iterable<Name>> persons = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc)
-				.select(byName);
+				.select(item -> new Enumerable<>(item.values()).select(Person.ElementSelectors.NameFunc));
 
 		Utils.print(persons, "testGroupByThenSelect(groupBy(age), select(Person)");
 	}
@@ -126,7 +122,7 @@ public class GroupByTests {
 
 		for (Person person : persons) {
 			final int index = rand.nextInt(states.length);
-			person.setState(states[index]);
+			person.setState(states[ index ]);
 		}
 
 		final Person personFrom = persons.get(rand.nextInt(persons.size()));

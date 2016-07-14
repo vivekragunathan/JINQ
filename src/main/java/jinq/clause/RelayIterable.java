@@ -1,6 +1,6 @@
 package jinq.clause;
 
-import jinq.RelayIterator;
+import jinq.iterators.RelayIterator;
 import misc.Throw;
 
 import java.util.Iterator;

@@ -1,9 +1,7 @@
 package jinq.core;
 
 import delegates.*;
-import jinq.DefaultClauseProvider;
-import jinq.GroupByEntry;
-import jinq.RelayIterable;
+import jinq.clause.RelayIterable;
 import jinq.clause.SelectIterable;
 import jodash.*;
 
@@ -28,7 +26,7 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 
 	public Enumerable(Iterable<T> iterable, IClauseProvider<T> clauseProvider) {
 		super(iterable);
-		this.clauseProvider = clauseProvider == null ? new DefaultClauseProvider<T>() : clauseProvider;
+		this.clauseProvider = clauseProvider == null ? new DefaultClauseProvider<>() : clauseProvider;
 	}
 
 	// region JINQ

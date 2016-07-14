@@ -1,6 +1,6 @@
 package jinq.qa.tests;
 
-import jinq.Enumerable;
+import jinq.core.Enumerable;
 import jinq.qa.shared.Name;
 import jinq.qa.shared.Person;
 import jinq.qa.shared.TestClauseProvider;
@@ -74,7 +74,7 @@ public class JinqTest {
 		}
 
 		{
-			final Iterable<Person> names2 = new Enumerable<>(persons, new TestClauseProvider<Person>())
+			final Iterable<Person> names2 = new Enumerable<>(persons, new TestClauseProvider<>())
 					.where(Person.Predicates.IsAvailable)
 					.select(/*Person.ElementSelectors.NameFunc*/);
 
@@ -87,7 +87,7 @@ public class JinqTest {
 
 		final Iterable<Name> names = new Enumerable<>(persons)
 				.where(Person.Predicates.IsAvailable)
-				.select(p -> p.getName());
+				.select(Person::getName);
 
 		System.out.println(Iterables.toString(names));
 

@@ -1,6 +1,6 @@
 package jinq.qa.tests;
 
-import jinq.Enumerable;
+import jinq.core.Enumerable;
 import jinq.qa.shared.Person;
 import jinq.qa.shared.Utils;
 import jodash.Iterables;

@@ -1,29 +1,26 @@
 package jinq.clause;
 
+import delegates.Action3;
 import delegates.Func;
 import jinq.iterators.FuncIterator;
 import jodash.Iterables;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class SelectIterable<T, R> implements Iterable<R> {  //, Iterator<R> {
+public class SelectIterable<T, R> implements Iterable<R> {
 
-	//private final Iterator<T> iterator;
 	private final Iterable<T> source;
 	private final Func<T, R>  selector;
 
 	public SelectIterable(Iterable<T> source, Func<T, R> selector) {
-		//this.iterator = source.iterator();
 		this.source = source;
 		this.selector = selector;
 	}
 
-	/*private SelectIterable(Iterator<T> iterator, Func<T, R> selector) {
-		this.iterator = iterator;
-		this.selector = selector;
-	}*/
+	@Override
+	public Iterator<R> iterator() {
+		return new FuncIterator<>(source, selector);
+	}
 
 	public List<R> toList() {
 		return Iterables.toList(this);
@@ -37,21 +34,20 @@ public class SelectIterable<T, R> implements Iterable<R> {  //, Iterator<R> {
 		return Iterables.count(this);
 	}
 
-	@Override
-	public Iterator<R> iterator() {
-		return new FuncIterator<>(source, selector);
-		//return new SelectIterable<>(iterator, selector);
+	/**
+	 * See {@link Iterables#toMap(Iterable, Func, Action3)} for more details
+	 */
+	public <K, V> Map<K, V> toMap(List<V> items, Func<V, K> keySelector) {
+		return toMap(items, keySelector, null);
 	}
 
-	/*@Override
-	public boolean hasNext() {
-		return iterator.hasNext();
-	}
+	/**
+	 * See {@link Iterables#toMap(Iterable, Func, Action3)} for more details
+	 */
+	public <K, V> Map<K, V> toMap(List<V> items,
+	                              Func<V, K> keySelector,
+	                              Action3<Map<K, V>, V, V> keyExistsAction) {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public R next() {
-		final T next = iterator.next();
-		return selector == null ? (R) next : selector.apply(next);
-	}*/
+		return Iterables.toMap(items, keySelector, keyExistsAction);
+	}
 }

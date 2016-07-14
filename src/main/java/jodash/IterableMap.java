@@ -1,7 +1,7 @@
 package jodash;
 
-import jinq.IEnumerator;
-import jinq.RelayIterator;
+import jinq.core.IEnumerator;
+import jinq.iterators.RelayIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
