@@ -1,12 +1,14 @@
 package jinq.qa.tests;
 
 import jinq.core.Enumerable;
+import jinq.clause.SelectIterable;
 import jinq.qa.shared.Name;
 import jinq.qa.shared.Person;
 import jinq.qa.shared.TestClauseProvider;
 import jinq.qa.shared.Utils;
 import jodash.Iterables;
 import misc.DateTimeHelpers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,82 +19,102 @@ import java.util.List;
 
 public class JinqTest {
 
-	private List<Person> persons;
+	private List<Person> allPersons;
 
 	@Before
 	public void setUp() throws Exception {
-		persons = Utils.getPersons();
+		allPersons = Utils.getPersons();
 	}
 
 	@Test
 	public void printAvailableOddWeightPersons() {
-		final Iterable<Person> persons = new Enumerable<>(this.persons)
+
+		final SelectIterable<Person, Person> query = new Enumerable<>(this.allPersons)
 				.where(Person.Predicates.IsAvailable)
 				.where(Person.Predicates.IsOddWeight)
 				.select(/*personNameProvider*/);
 
-		Utils.print(persons, "printAvailableOddWeightPersons");
+		final List<Person> persons = query.toList();
+		final int          count   = query.count();
+
+		Assert.assertTrue(persons.size() == count);
+
+		Utils.print(persons, count, "printAvailableOddWeightPersons");
 	}
 
 	@Test
 	public void printAvailableEvenWeightPersonNames() {
-		final Iterable<Name> names = new Enumerable<>(this.persons)
+
+		final SelectIterable<Person, Name> query = new Enumerable<>(this.allPersons)
 				.where(Person.Predicates.IsAvailable)
 				.where(Person.Predicates.IsOddWeight)
 				.select(Person.ElementSelectors.NameFunc);
 
-		Utils.print(names, "printAvailableEvenWeightPersons");
+		final List<Name> names = query.toList();
+		final int        count = query.count();
+
+		Utils.print(names, count, "printAvailableEvenWeightPersons (" + count + ")");
 	}
 
 	@Test
 	public void printWeights() {
-		final Iterable<Double> weights = new Enumerable<>(this.persons)
+		final SelectIterable<Person, Double> query = new Enumerable<>(this.allPersons)
 				.select(Person.ElementSelectors.WeightFunc);
 
-		Utils.print(weights, "printWeights", true);
-	}
+		final List<Double> weights = query.toList();
+		final int          count   = query.count();
 
-	@Test
-	public void testOrderByThenWhereAndSelect() throws Exception {
-		final Iterable<Name> selected = new Enumerable<>(persons)
-				.orderBy(Person.Comparators.ByName)
-				.where(Person.Predicates.IsAvailable)
-				.select(Person.ElementSelectors.NameFunc);
-
-		System.out.println(Iterables.toString(selected, "\n"));
+		Utils.print(weights, count, "printWeights", true);
 	}
 
 	@Test
 	public void testWithCustomClauseProvider() throws Exception {
 
 		{
-			final Iterable<Person> names = new Enumerable<>(persons)
+			final SelectIterable<Person, Person> query = new Enumerable<>(allPersons)
 					.where(Person.Predicates.IsAvailable)
 					.select(/*Person.ElementSelectors.NameFunc*/);
 
-			Utils.print(names, "testWithCustomClauseProvider: Default Clause Provider");
+			final List<Person> persons = query.toList();
+			final int          count   = query.count();
+
+			Assert.assertTrue(persons.size() == count);
+
+			Utils.print(persons, count, "testWithCustomClauseProvider: Default Clause Provider");
 		}
 
 		{
-			final Iterable<Person> names2 = new Enumerable<>(persons, new TestClauseProvider<>())
+			final SelectIterable<Person, Person> query = new Enumerable<>(allPersons, new TestClauseProvider<>())
 					.where(Person.Predicates.IsAvailable)
 					.select(/*Person.ElementSelectors.NameFunc*/);
 
-			Utils.print(names2, "testWithCustomClauseProvider: Custom Clause Provider");
+			final List<Person> persons = query.toList();
+			final int          count   = query.count();
+
+			Assert.assertTrue(persons.size() == count);
+
+			Utils.print(persons, count, "testWithCustomClauseProvider: Custom Clause Provider");
 		}
 	}
 
 	@Test
 	public void testFirstLast() throws Exception {
 
-		final Iterable<Name> names = new Enumerable<>(persons)
+		final SelectIterable<Person, Name> query = new Enumerable<>(allPersons)
 				.where(Person.Predicates.IsAvailable)
 				.select(Person::getName);
+
+		final List<Name> names = query.toList();
+		final int        count = query.count();
+
+		Assert.assertTrue(names.size() == count);
+
+		Utils.print(names, count, "testFirstLast(isAvailable, getName)");
 
 		System.out.println(Iterables.toString(names));
 
 		{
-			final Person person = new Enumerable<>(persons)
+			final Person person = new Enumerable<>(allPersons)
 					.where(Person.Predicates.IsAvailable)
 					.first();
 
@@ -100,29 +122,12 @@ public class JinqTest {
 		}
 
 		{
-			final Person person = new Enumerable<>(persons)
+			final Person person = new Enumerable<>(allPersons)
 					.where(Person.Predicates.IsAvailable)
 					.last();
 
 			System.out.println("Last Available: " + person);
 		}
-	}
-
-	@Test
-	public void testOrderBy() throws Exception {
-
-		final String dir   = "/usr/local/bin/";
-		final int    days  = 5;
-		final File[] files = new File(dir).listFiles();
-
-		System.out.printf("Print files from %s that were modified in the last %d days%n", dir, days);
-
-		final Iterable<String> query = new Enumerable<>(files)
-				.where(f -> DateTimeHelpers.getDaysDifference(f.lastModified()) <= 5)
-				.orderBy((left, right) -> Long.compare(left.length(), right.length()))
-				.select(File::getName);
-
-		System.out.println(Iterables.toString(query, "\n"));
 	}
 
 	private static void printFiles(File[] files) {

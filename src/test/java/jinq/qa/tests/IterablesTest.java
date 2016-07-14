@@ -57,7 +57,7 @@ public class IterablesTest {
 	@Test
 	public void testFoldRightSubtractionWithZeroInitial() throws Exception {
 		final Integer           folderInitial = 0;
-		final Iterable<Integer> iterable      = Utils.toList(Utils.toStack(DEFAULT_INPUT_ITERABLE));
+		final Iterable<Integer> iterable      = Iterables.toList(Iterables.toStack(DEFAULT_INPUT_ITERABLE));
 		final int               actual        = Iterables.foldRight(iterable, folderInitial, subtractFunc2);
 
 		System.out.print(" => " + actual + "\n");

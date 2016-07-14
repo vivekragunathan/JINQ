@@ -1,5 +1,6 @@
 package jinq.qa.tests;
 
+import jinq.clause.SelectIterable;
 import jinq.core.Enumerable;
 import jinq.qa.shared.Person;
 import jinq.qa.shared.Utils;
@@ -29,24 +30,25 @@ public class TailEndTests {
 
 	@Test
 	public void testDistinct() {
-		final Iterable<Boolean> booleans = new Enumerable<>(persons)
-				.where(Utils.makeTruthyPredicate())
+		final SelectIterable<Person, Boolean> query = new Enumerable<>(persons)
+				.where(p -> p != null)
 				.select(Person.ElementSelectors.AvailableFunc);
 
-		final Iterable<Boolean> distinctBooleans = Iterables.distinct(booleans);
+		final Iterable<Boolean> set   = Iterables.distinct(query);
+		final int               count = query.count();
 
-		Utils.print(distinctBooleans, "testDistinct {makeTruthyPredicate, availableTransformer}");
-
+		Utils.print(set, count, "testDistinct {makeTruthyPredicate, availableTransformer}");
 	}
 
 	@Test
 	public void testToList() {
-		final Iterable<Person> evenWeightPersons = new Enumerable<>(persons)
+		final SelectIterable<Person, Person> query = new Enumerable<>(persons)
 				.where(Person.Predicates.IsEvenWeight)
 				.select();
 
-		final Iterable<Person> listOfPersons = new Enumerable<>(evenWeightPersons).toList();
+		final Iterable<Person> evenWeightPersons = query.toList();
+		final int              count             = query.count();
 
-		Utils.print(listOfPersons, "testToList {evenWeightPredicate,makeIdentityTransformer}");
+		Utils.print(evenWeightPersons, count, "testToList {evenWeightPredicate,makeIdentityTransformer}");
 	}
 }

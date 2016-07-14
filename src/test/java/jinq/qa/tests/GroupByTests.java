@@ -1,5 +1,7 @@
 package jinq.qa.tests;
 
+import jinq.clause.SelectIterable;
+import jinq.clause.SelectManyIterable;
 import jinq.core.Enumerable;
 import jinq.core.GroupByEntry;
 import jinq.core.IEnumerable;
@@ -7,6 +9,7 @@ import jinq.qa.shared.Name;
 import jinq.qa.shared.Person;
 import jinq.qa.shared.Utils;
 import misc.UnitedStates;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +37,7 @@ public class GroupByTests {
 		final IEnumerable<GroupByEntry<Integer, Person>> groupings = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc);
 
-		Utils.print(null, "testSimpleGroupBy");
+		Utils.print(null, 0, "testSimpleGroupBy");
 
 		for (GroupByEntry<Integer, Person> current : groupings) {
 			System.out.println(current.getKey());
@@ -53,7 +56,7 @@ public class GroupByTests {
 		final IEnumerable<GroupByEntry<Integer, Name>> groupings = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc, Person.ElementSelectors.NameFunc);
 
-		Utils.print(null, "testGroupByAge");
+		Utils.print(null, 0, "testGroupByAge");
 
 		for (GroupByEntry<Integer, Name> current : groupings) {
 
@@ -81,7 +84,7 @@ public class GroupByTests {
 		final Iterable<GroupByEntry<UnitedStates, Name>> groupings = new Enumerable<>(persons)
 				.groupBy(Person.KeySelectors.StateFunc, Person.ElementSelectors.NameFunc);
 
-		Utils.print(null, "testGroupByState");
+		Utils.print(null, 0, "testGroupByState");
 
 		for (GroupByEntry<UnitedStates, Name> current : groupings) {
 
@@ -106,13 +109,32 @@ public class GroupByTests {
 	@Test
 	public void testGroupByThenSelect() throws Exception {
 
-		// final Func<GroupByEntry<Integer, Person>, Iterable<Person>> personsByAge = GroupByEntry::values;
-
-		final Iterable<Iterable<Name>> persons = new Enumerable<>(this.persons)
+		final SelectIterable<GroupByEntry<Integer, Person>, Iterable<Person>> query = new Enumerable<>(this.persons)
 				.groupBy(Person.KeySelectors.AgeFunc)
-				.select(item -> new Enumerable<>(item.values()).select(Person.ElementSelectors.NameFunc));
+				.select(GroupByEntry::values);
 
-		Utils.print(persons, "testGroupByThenSelect(groupBy(age), select(Person)");
+		final List<Iterable<Person>> personsList = query.toList();
+		final int                    count       = query.count();
+
+		Assert.assertTrue(personsList.size() == count);
+
+		Utils.print(personsList, count, "testGroupByThenSelect(groupBy(age), select(Person)");
+	}
+
+	@Test
+	public void testGroupByThenFlatten() throws Exception {
+
+		final SelectIterable<GroupByEntry<Integer, Person>, Iterable<Person>> query = new Enumerable<>(this.persons)
+				.groupBy(Person.KeySelectors.AgeFunc)
+				.select(GroupByEntry::values);
+
+		final List<Iterable<Person>> personsList = query.toList();
+		final int                    count       = query.count();
+		final Iterable<Person>       persons     = new SelectManyIterable<>(personsList);
+
+		Assert.assertTrue(personsList.size() == count);
+
+		Utils.print(persons, count, "testGroupByThenFlatten(groupBy(age), select(Person)");
 	}
 
 	private static void assignRandomState(List<Person> persons) {

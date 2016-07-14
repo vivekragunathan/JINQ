@@ -363,4 +363,24 @@ public class Iterables {
 
 		return sb.toString();
 	}
+
+	public static <T> Stack<T> toStack(Iterable<T> items) {
+		final Stack<T> stack = new Stack<>();
+
+		for (T item : items) {
+			stack.push(item);
+		}
+
+		return stack;
+	}
+
+	public static <T> List<T> toList(Stack<T> stack) {
+		final List<T> list = new ArrayList<>(stack.size());
+
+		for (int index = stack.size() - 1; index >= 0; index--) {
+			list.add(stack.get(index));
+		}
+
+		return list;
+	}
 }
