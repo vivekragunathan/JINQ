@@ -1,7 +1,6 @@
 package jinq.qa.shared;
 
-import delegates.Func;
-import delegates.Predicate;
+import jodash.Iterables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,60 +11,17 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static <T> Stack<T> toStack(Iterable<T> items) {
-		final Stack<T> stack = new Stack<>();
-
-		for (T item : items) {
-			stack.push(item);
-		}
-
-		return stack;
+	public static <T> void print(Iterable<T> source, int count, String title) {
+		print(source, count, title, false);
 	}
 
-	public static <T> List<T> toList(Stack<T> stack) {
-		final List<T> list = new ArrayList<>(stack.size());
+	public static <T> void print(Iterable<T> source, int count, String title, boolean itemsOnSingleLine) {
 
-		for (int index = stack.size() - 1; index >= 0; index--) {
-			list.add(stack.get(index));
-		}
+		final String message = source == null
+		                       ? title
+		                       : String.format("%s (%d~%d)", title, Iterables.count(source), count);
 
-		return list;
-	}
-
-	public static <T> Predicate<T> makeTruthyPredicate() {
-		return new Predicate<T>() {
-			@Override
-			public boolean evaluate(T value) {
-				return value != null;
-			}
-		};
-	}
-
-	public static <T> Predicate<T> makeFalsePredicate() {
-		return new Predicate<T>() {
-			@Override
-			public boolean evaluate(T value) {
-				return false;
-			}
-		};
-	}
-
-	public static <T> Func<T, T> makeIdentityTransformer() {
-		return new Func<T, T>() {
-			@Override
-			public T apply(T item) {
-				return item;
-			}
-		};
-	}
-
-
-	public static <T> void print(Iterable<T> source, String title) {
-		print(source, title, false);
-	}
-
-	public static <T> void print(Iterable<T> source, String title, boolean itemsOnSingleLine) {
-		printTestTitle(title);
+		printTestTitle(message);
 
 		if (source == null) {
 			return;
@@ -76,7 +32,9 @@ public class Utils {
 		for (T item : source) {
 
 			if (item instanceof Iterable) {
-				print((Iterable) item, null, itemsOnSingleLine);
+				final Iterable iterable = (Iterable) item;
+				final int      size     = Iterables.count(iterable);
+				print(iterable, size, "<iterable>", itemsOnSingleLine);
 				continue;
 			}
 
