@@ -130,7 +130,6 @@ public class JinqTest {
 		}
 	}
 
-
 	private static void printFiles(File[] files) {
 		final DateFormat dateFormat = DateFormat.getDateInstance();
 		final Date       today      = new Date();

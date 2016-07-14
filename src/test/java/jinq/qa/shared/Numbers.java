@@ -1,5 +1,7 @@
 package jinq.qa.shared;
 
+import jodash.Iterables;
+
 import java.util.List;
 import java.util.Stack;
 
@@ -27,8 +29,8 @@ public class Numbers {
 
 	public static <T extends Number> T diffRight(Iterable<T> items, T initial) {
 
-		final Stack<T> stack             = Utils.toStack(items);
-		final List<T>  list              = Utils.toList(stack);
+		final Stack<T> stack             = Iterables.toStack(items);
+		final List<T>  list              = Iterables.toList(stack);
 		final int      reverseStartIndex = list.size() - 1;
 		int            index             = reverseStartIndex;
 		T              result            = initial;

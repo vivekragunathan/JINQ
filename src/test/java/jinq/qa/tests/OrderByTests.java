@@ -33,7 +33,7 @@ public class OrderByTests {
 				.where(Person.Predicates.IsAvailable)
 				.orderBy(Person.Comparators.ByFirstName);
 
-		Utils.print(persons, "testOrderBy(firstName)");
+		Utils.print(persons, 0, "testOrderBy(firstName)");
 	}
 
 	@Test
@@ -41,6 +41,6 @@ public class OrderByTests {
 		final Iterable<Person> persons = new Enumerable<>(this.persons)
 				.orderBy(Person.Comparators.ByWeightDesc);
 
-		Utils.print(persons, "testOrderByDesc(weight)");
+		Utils.print(persons, 0, "testOrderByDesc(weight)");
 	}
 }
