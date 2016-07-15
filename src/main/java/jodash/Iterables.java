@@ -259,8 +259,25 @@ public class Iterables {
 		return count;
 	}
 
-	public static <K, V> Map<K, V> toMap(Iterable<V> items, Func<V, K> keySelector) {
+	/**
+	 * See {@link #toMap(Iterable, Func, Func, Action3)} for more details
+	 */
+	public static <T, K> Map<K, T> toMap(Iterable<T> items, Func<T, K> keySelector) {
 		return toMap(items, keySelector, null);
+	}
+
+	/**
+	 * See {@link #toMap(Iterable, Func, Func, Action3)} for more details
+	 */
+	public static <T, K> Map<K, T> toMap(Iterable<T> items,
+	                                     Func<T, K> keySelector,
+	                                     Action3<Map<K, T>, T, T> keyExistsAction) {
+		return toMap(
+				items,
+				keySelector,
+				null,
+				keyExistsAction
+		);
 	}
 
 	/**
@@ -268,33 +285,47 @@ public class Iterables {
 	 * that already exists in the map, an optional action can be performed when
 	 * a {@param keyExistsAction} is provided.
 	 *
-	 * @param keySelector Function that is invoked to determine the key for the item
-	 *                    when inserting into the resultant map
+	 * @param keySelector   Function that is invoked to determine the key for the item
+	 *                      when inserting into the resultant map
+	 *
+	 * @param transformer   (Optional) Function that denotes selector or transformer to convert the
+	 *                      source type T to an alternative type V
 	 *
 	 * @param keyExistsAction (Optional) Function that is invoked when an item with
 	 *                        the key determined via {@param keySelector} already exists
 	 *                        in the map. Function is invoked with two parameters:
 	 *                        parameter #1: value already in the map for the key
 	 *                        parameter #2: item in the current iteration of {@param items}
+	 *                        If this action is not provided, value in the map is overridden
+	 *                        with the current value in the iteration.
 	 */
-	public static <K, V> Map<K, V> toMap(Iterable<V> items,
-	                                     Func<V, K> keySelector,
-	                                     Action3<Map<K, V>, V, V> keyExistsAction) {
+	public static <T, K, V> Map<K, V> toMap(Iterable<T> items,
+	                                        Func<T, K> keySelector,
+	                                        Func<T, V> transformer,
+	                                        Action3<Map<K, V>, V, V> keyExistsAction) {
 
-		final Map<K, V> map = new HashMap<>();
+		final Map<K, V> map       = new HashMap<>();
+		final boolean   transform = transformer != null;
 
-		for (V item : items) {
+		for (T item : items) {
 			final K key   = keySelector.apply(item);
 			final V value = map.get(key);
 
 			if (value == null) {
-				map.put(key, item);
+				map.put(key, transform ? transformer.apply(item) : (V) item);
 				continue;
 			}
 
-			if (keyExistsAction != null) {
-				keyExistsAction.apply(map, value, item);
+			if (keyExistsAction == null) {
+				map.put(key, value);
+				continue;
 			}
+
+			keyExistsAction.apply(
+					map,
+					value,
+					transform ? transformer.apply(item) : (V) item
+			);
 		}
 
 		return map;
@@ -342,6 +373,13 @@ public class Iterables {
 
 	@SafeVarargs
 	public static <T> String concat2(String delimiter, T... items) {
+		return concat(
+				Arrays.asList(items),
+				delimiter
+		);
+	}
+
+	public static <T> String concat(Iterable<T> items, String delimiter) {
 		if (items == null) {
 			return Defaults.EMPTY_STRING;
 		}

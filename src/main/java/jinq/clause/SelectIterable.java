@@ -37,17 +37,26 @@ public class SelectIterable<T, R> implements Iterable<R> {
 	/**
 	 * See {@link Iterables#toMap(Iterable, Func, Action3)} for more details
 	 */
-	public <K, V> Map<K, V> toMap(List<V> items, Func<V, K> keySelector) {
-		return toMap(items, keySelector, null);
+	public <K> Map<K, R> toMap(Func<R, K> keySelector, Action3<Map<K, R>, R, R> keyExistsAction) {
+		return toMap(
+				keySelector,
+				null,
+				keyExistsAction
+		);
 	}
 
 	/**
-	 * See {@link Iterables#toMap(Iterable, Func, Action3)} for more details
+	 * See {@link Iterables#toMap(Iterable, Func, Func, Action3)} for more details
 	 */
-	public <K, V> Map<K, V> toMap(List<V> items,
-	                              Func<V, K> keySelector,
+	public <K, V> Map<K, V> toMap(Func<R, K> keySelector,
+	                              Func<R, V> transformer,
 	                              Action3<Map<K, V>, V, V> keyExistsAction) {
 
-		return Iterables.toMap(items, keySelector, keyExistsAction);
+		return Iterables.toMap(
+				this,
+				keySelector,
+				transformer,
+				keyExistsAction
+		);
 	}
 }
