@@ -1,11 +1,9 @@
 package jinq.qa.tests;
 
-import jinq.core.Enumerable;
 import jinq.clause.SelectIterable;
-import jinq.qa.shared.Name;
-import jinq.qa.shared.Person;
-import jinq.qa.shared.TestClauseProvider;
-import jinq.qa.shared.Utils;
+import jinq.core.Enumerable;
+import jinq.core.IEnumerable;
+import jinq.qa.shared.*;
 import jodash.Iterables;
 import misc.DateTimeHelpers;
 import org.junit.Assert;
@@ -14,6 +12,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +23,44 @@ public class JinqTest {
 	@Before
 	public void setUp() throws Exception {
 		allPersons = Utils.getPersons();
+	}
+
+	@Test
+	public void skipOddAndPrintEvenWeightPersons() throws Exception {
+		final IEnumerable<Person> query = new Enumerable<>(allPersons)
+				.skip(p -> p.weight % 2 != 0)
+				.orderBy(Person::compareTo);
+
+		final List<Person> evenWeightPersons = query.toList();
+		final int          count             = query.count();
+
+		Assert.assertTrue(evenWeightPersons.size() == count);
+
+		Utils.print(evenWeightPersons, count, "printEvenWeightPersons");
+	}
+
+	@Test
+	public void skipNullAndPrintEvens() throws Exception {
+		final RndNumProvider rnp     = new RndNumProvider(10, true);
+		final List<Integer>  numbers = new ArrayList<>();
+
+		for (Integer n : rnp) {
+			numbers.add(n);
+		}
+
+		System.out.println("Raw Source: " + Iterables.toString(numbers, ", "));
+
+		final IEnumerable<Integer> query = new Enumerable<>(numbers)
+				.skip(n -> n == null)
+				.where(n -> n % 2 == 0)
+				.orderBy(Integer::compareTo);
+
+		final List<Integer> result = query.toList();
+		final int           count  = query.count();
+
+		Assert.assertTrue(result.size() == count);
+
+		Utils.print(result, count, "skipNullAndPrintEvens");
 	}
 
 	@Test

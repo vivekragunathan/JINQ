@@ -390,7 +390,7 @@ public class Iterables {
 		int                 lastInsertIndex = -1;
 
 		for (T item : items) {
-			sb.append(item.toString());
+			sb.append(item == null ? "null" : item.toString());
 			sb.append(conjunction);
 			lastInsertIndex = sb.length() - delimiterLength;
 		}

@@ -4,12 +4,16 @@ import delegates.*;
 import jinq.clause.SelectIterable;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	// region JINQ
 
 	IEnumerable<T> where(Predicate<T> predicate);
+
+	IEnumerable<T> skip(Predicate<T> predicate);
 
 	SelectIterable<T, T> select();
 
@@ -29,9 +33,9 @@ public interface IEnumerable<T extends Comparable<T>> extends Iterable<T> {
 
 	int count();
 
-	Iterable<T> distinct();
+	Set<T> distinct();
 
-	Iterable<T> toList();
+	List<T> toList();
 
 	// endregion
 

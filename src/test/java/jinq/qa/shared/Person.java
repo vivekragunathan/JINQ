@@ -8,11 +8,11 @@ import java.util.Comparator;
 
 public class Person implements Comparable<Person> {
 
-	private final Name         name;
-	private final int          age;
-	private final double       weight;
-	private final boolean      available;
-	private       UnitedStates state;
+	public final Name         name;
+	public final int          age;
+	public final double       weight;
+	public final boolean      available;
+	private      UnitedStates state;
 
 	public Person(Name name, double weight, boolean available) {
 		this(name, 0, weight, UnitedStates.CALIFORNIA, available);

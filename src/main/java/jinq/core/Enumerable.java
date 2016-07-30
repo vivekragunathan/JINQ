@@ -7,6 +7,8 @@ import jodash.*;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implements IEnumerable<T> {
 
@@ -35,6 +37,13 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	public IEnumerable<T> where(Predicate<T> predicate) {
 		return new Enumerable<>(
 				clauseProvider.getWhereIterable(source, predicate)
+		);
+	}
+
+	@Override
+	public IEnumerable<T> skip(Predicate<T> predicate) {
+		return new Enumerable<>(
+				clauseProvider.getSkipIterable(source, predicate)
 		);
 	}
 
@@ -96,12 +105,12 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	}
 
 	@Override
-	public Iterable<T> distinct() {
+	public Set<T> distinct() {
 		return Iterables.distinct(source);
 	}
 
 	@Override
-	public Iterable<T> toList() {
+	public List<T> toList() {
 		return Iterables.toList(source);
 	}
 

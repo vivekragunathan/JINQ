@@ -14,7 +14,12 @@ public class DefaultClauseProvider<T extends Comparable<T>> implements IClausePr
 
 	@Override
 	public Iterable<T> getWhereIterable(Iterable<T> source, Predicate<T> predicate) {
-		return new Enumerable<>(new PredicateIterable<T>(source, predicate));
+		return new Enumerable<>(new PredicateIterable<>(source, predicate));
+	}
+
+	@Override
+	public Iterable<T> getSkipIterable(Iterable<T> source, Predicate<T> predicate) {
+		return new Enumerable<>(new PredicateIterable<>(source, predicate, true));
 	}
 
 	@Override

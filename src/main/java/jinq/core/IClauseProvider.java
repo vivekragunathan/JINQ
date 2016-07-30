@@ -9,6 +9,8 @@ public interface IClauseProvider<T extends Comparable<T>> {
 
 	Iterable<T> getWhereIterable(Iterable<T> source, Predicate<T> predicate);
 
+	Iterable<T> getSkipIterable(Iterable<T> source, Predicate<T> predicate);
+
 	Iterable<T> getOrderByIterable(Iterable<T> source, Comparator<T> keySelector);
 
 	SelectIterable<T, T> getSelectIterable(Iterable<T> source);
