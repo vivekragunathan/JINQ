@@ -13,41 +13,41 @@ public class DefaultClauseProvider<T extends Comparable<T>> implements IClausePr
 	}
 
 	@Override
-	public Iterable<T> getWhereIterable(Iterable<T> source, Predicate<T> predicate) {
+	public IEnumerable<T> getWhereEnumerable(Iterable<T> source, Predicate<T> predicate) {
 		return new Enumerable<>(new PredicateIterable<>(source, predicate));
 	}
 
 	@Override
-	public Iterable<T> getSkipIterable(Iterable<T> source, Predicate<T> predicate) {
+	public IEnumerable<T> getSkipEnumerable(Iterable<T> source, Predicate<T> predicate) {
 		return new Enumerable<>(new PredicateIterable<>(source, predicate, true));
 	}
 
 	@Override
-	public Iterable<T> getOrderByIterable(Iterable<T> source, Comparator<T> keySelector) {
+	public IEnumerable<T> getOrderByEnumerable(Iterable<T> source, Comparator<T> keySelector) {
 		return new Enumerable<>(new OrderByIterable<>(source, keySelector));
 	}
 
 	@Override
-	public SelectIterable<T, T> getSelectIterable(Iterable<T> source) {
-		return getSelectIterable(source, null);
+	public SelectIterable<T, T> getSelectEnumerable(Iterable<T> source) {
+		return getSelectEnumerable(source, null);
 	}
 
 	@Override
-	public <R> SelectIterable<T, R> getSelectIterable(Iterable<T> source, Func<T, R> selector) {
+	public <R> SelectIterable<T, R> getSelectEnumerable(Iterable<T> source, Func<T, R> selector) {
 		return new SelectIterable<>(source, selector);
 	}
 
 	@Override
 	public <K extends Comparable<K>>
-	IEnumerable<GroupByEntry<K, T>> getGroupByIterable(Iterable<T> source, Func<T, K> keySelector) {
-		return getGroupByIterable(source, keySelector, null);
+	IEnumerable<GroupByEntry<K, T>> getGroupByEnumerable(Iterable<T> source, Func<T, K> keySelector) {
+		return getGroupByEnumerable(source, keySelector, null);
 	}
 
 	@Override
 	public <K extends Comparable<K>, E extends Comparable<E>>
-	IEnumerable<GroupByEntry<K, E>> getGroupByIterable(Iterable<T> source,
-	                                                   Func<T, K> keySelector,
-	                                                   Func<T, E> elementSelector) {
+	IEnumerable<GroupByEntry<K, E>> getGroupByEnumerable(Iterable<T> source,
+	                                                     Func<T, K> keySelector,
+	                                                     Func<T, E> elementSelector) {
 		final Iterable<GroupByEntry<K, E>> groups = performGroupBy(
 				source,
 				keySelector,

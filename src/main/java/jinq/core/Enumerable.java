@@ -1,6 +1,7 @@
 package jinq.core;
 
 import delegates.*;
+import jinq.clause.PredicateIterable;
 import jinq.clause.RelayIterable;
 import jinq.clause.SelectIterable;
 import jodash.*;
@@ -35,16 +36,28 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 
 	@Override
 	public IEnumerable<T> where(Predicate<T> predicate) {
-		return new Enumerable<>(
-				clauseProvider.getWhereIterable(source, predicate)
-		);
+		// Case: Where chaining eg. where(cond1).where(cond2)
+		// Instead of creating additional where enumerable(s), the
+		// predicate is added to existing PredicateIterable.
+		if (isPredicateIterable() && !isSkipIterable()) {
+			((PredicateIterable<T>) this.source).add(predicate);
+			return this;
+		}
+
+		return clauseProvider.getWhereEnumerable(source, predicate);
 	}
 
 	@Override
 	public IEnumerable<T> skip(Predicate<T> predicate) {
-		return new Enumerable<>(
-				clauseProvider.getSkipIterable(source, predicate)
-		);
+		// Case: skip chaining eg. skip(cond1).skip(cond2)
+		// Instead of creating additional where enumerable(s), the
+		// predicate is added to existing PredicateIterable.
+		if (isPredicateIterable() && isSkipIterable()) {
+			((PredicateIterable<T>) this.source).add(predicate);
+			return this;
+		}
+
+		return clauseProvider.getSkipEnumerable(source, predicate);
 	}
 
 	@Override
@@ -54,13 +67,13 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 
 	@Override
 	public <R> SelectIterable<T, R> select(Func<T, R> selector) {
-		return clauseProvider.getSelectIterable(source, selector);
+		return clauseProvider.getSelectEnumerable(source, selector);
 	}
 
 	@Override
 	public IEnumerable<T> orderBy(Comparator<T> comparator) {
 		return new Enumerable<>(
-				clauseProvider.getOrderByIterable(source, comparator)
+				clauseProvider.getOrderByEnumerable(source, comparator)
 		);
 	}
 
@@ -68,7 +81,7 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	public <K extends Comparable<K>>
 	IEnumerable<GroupByEntry<K, T>> groupBy(Func<T, K> keySelector) {
 		return new Enumerable<>(
-				clauseProvider.getGroupByIterable(source, keySelector)
+				clauseProvider.getGroupByEnumerable(source, keySelector)
 		);
 	}
 
@@ -76,7 +89,7 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	public <K extends Comparable<K>, E extends Comparable<E>>
 	IEnumerable<GroupByEntry<K, E>> groupBy(Func<T, K> keySelector, Func<T, E> elementSelector) {
 		return new Enumerable<>(
-				clauseProvider.getGroupByIterable(source, keySelector, elementSelector)
+				clauseProvider.getGroupByEnumerable(source, keySelector, elementSelector)
 		);
 	}
 
@@ -131,6 +144,36 @@ public class Enumerable<T extends Comparable<T>> extends RelayIterable<T> implem
 	@Override
 	public T find(Predicate<T> predicate) {
 		return Iterables.find(this.source, predicate);
+	}
+
+	// endregion
+
+	// region Private and Helper Methods
+
+	private boolean isPredicateIterable() {
+		return this.source instanceof PredicateIterable;
+	}
+
+	/**
+	 * NOTE: Has to be called in conjunction with isPredicateIterable.
+	 * Otherwise, a return value of false might end up suggesting
+	 * that the source is a whereIterable (not a skipIterable) where as
+	 * the source might not be a {@link PredicateIterable} in the
+	 * first place.
+	 */
+	private boolean isSkipIterable() {
+		if (isPredicateIterable()) {
+			final PredicateIterable<T> source = (PredicateIterable<T>) this.source;
+			return source.isSkipIterable();
+		}
+
+		return false;
+	}
+
+	private static <T extends Comparable<T>> Enumerable<T> toEnumerable(Iterable<T> iterable) {
+		return iterable instanceof Enumerable
+		       ? (Enumerable<T>) iterable
+		       : new Enumerable<>(iterable);
 	}
 
 	// endregion

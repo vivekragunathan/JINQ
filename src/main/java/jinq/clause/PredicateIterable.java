@@ -8,7 +8,7 @@ import java.util.Iterator;
 public class PredicateIterable<T> implements Iterable<T> {
 
 	private final Iterable<T>  source;
-	private final Predicate<T> predicate;
+	private       Predicate<T> predicate;
 	private final boolean      invert;
 
 	public PredicateIterable(Iterable<T> source, Predicate<T> predicate) {
@@ -26,5 +26,19 @@ public class PredicateIterable<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return new PredicateIterator<>(source, predicate, invert);
+	}
+
+	public boolean isSkipIterable() {
+		return this.invert;
+	}
+
+	public void add(Predicate<T> predicate) {
+		if (predicate != null) {
+			this.predicate = join(this.predicate, predicate);
+		}
+	}
+
+	private static <T> Predicate<T> join(Predicate<T> predicate1, Predicate<T> predicate2) {
+		return x -> predicate1.evaluate(x) && predicate2.evaluate(x);
 	}
 }
